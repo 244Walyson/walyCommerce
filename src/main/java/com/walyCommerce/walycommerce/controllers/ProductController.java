@@ -2,6 +2,8 @@ package com.walyCommerce.walycommerce.controllers;
 
 import com.walyCommerce.walycommerce.dto.ProductDTO;
 import com.walyCommerce.walycommerce.services.ProductService;
+import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.Servlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,12 +43,17 @@ public class ProductController {
 
     @PutMapping(value ="/{id}")
     public ResponseEntity<ProductDTO> update(@PathVariable Long id,@RequestBody ProductDTO dto) {
-        dto = service.update(id, dto);
-        return ResponseEntity.ok(dto);
+        try{
+            dto = service.update(id, dto);
+            return ResponseEntity.ok(dto);
+        }
+        catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("recurso não encontrado");
+        }
 
     }
     @DeleteMapping(value ="/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
        service.delete(id);
        return ResponseEntity.noContent().build();
     }
