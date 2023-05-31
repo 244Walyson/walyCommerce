@@ -1,6 +1,7 @@
 package com.walyCommerce.walycommerce.controllers;
 
 import com.walyCommerce.walycommerce.dto.ProductDTO;
+import com.walyCommerce.walycommerce.dto.ProductMinDTO;
 import com.walyCommerce.walycommerce.services.ProductService;
 import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,8 +31,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable, @RequestParam(name = "name", defaultValue = "") String name) {
-        Page<ProductDTO> dto = service.findAll(name, pageable);
+    public ResponseEntity<Page<ProductMinDTO>> findAll(Pageable pageable, @RequestParam(name = "name", defaultValue = "") String name) {
+        Page<ProductMinDTO> dto = service.findAll(name, pageable);
         return ResponseEntity.ok(dto);
     }
 
