@@ -126,6 +126,10 @@ public class User implements UserDetails {
         roles.add(role);
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
