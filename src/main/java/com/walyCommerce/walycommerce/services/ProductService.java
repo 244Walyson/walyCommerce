@@ -1,7 +1,9 @@
 package com.walyCommerce.walycommerce.services;
 
+import com.walyCommerce.walycommerce.dto.CategoryDTO;
 import com.walyCommerce.walycommerce.dto.ProductDTO;
 import com.walyCommerce.walycommerce.dto.ProductMinDTO;
+import com.walyCommerce.walycommerce.entities.Category;
 import com.walyCommerce.walycommerce.entities.Product;
 import com.walyCommerce.walycommerce.repositories.ProductRepository;
 import com.walyCommerce.walycommerce.services.exceptions.DatabaseException;
@@ -70,6 +72,12 @@ public class ProductService {
         entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
+        entity.getCategories().clear();
+        for (CategoryDTO catDto : dto.getCategories()){
+            Category cat  = new Category();
+            cat.setId(catDto.getId());
+            entity.getCategories().add(cat);
+        }
     }
 
 
