@@ -3,6 +3,7 @@ package com.walyCommerce.walycommerce.dto;
 import com.walyCommerce.walycommerce.entities.Order;
 import com.walyCommerce.walycommerce.entities.OrderItem;
 import com.walyCommerce.walycommerce.entities.OrderStatus;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
@@ -16,6 +17,8 @@ public class OrderDTO {
 
     private ClientDTO client;
     private PaymentDTO paymentDTO;
+
+    @NotEmpty(message = "O pedido deve ter pelo menos um item")
     private List<OrderItemDTO> items = new ArrayList<>();
 
     public OrderDTO(Long id, Instant moment, OrderStatus status, ClientDTO client, PaymentDTO paymentDTO) {
