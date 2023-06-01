@@ -3,6 +3,7 @@ package com.walyCommerce.walycommerce.controllers.handlers;
 import com.walyCommerce.walycommerce.dto.CustomError;
 import com.walyCommerce.walycommerce.dto.ValidationError;
 import com.walyCommerce.walycommerce.services.exceptions.DatabaseException;
+import com.walyCommerce.walycommerce.services.exceptions.ForbiddenException;
 import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,13 @@ public class controllerExceptionHandler {
         for (FieldError f : e.getBindingResult().getFieldErrors()){
             err.addError(f.getField(), f.getDefaultMessage());
         }
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomError> forbidden(ForbiddenException e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }
