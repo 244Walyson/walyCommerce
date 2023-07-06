@@ -8,6 +8,7 @@ import com.walyCommerce.walycommerce.entities.Product;
 import com.walyCommerce.walycommerce.repositories.ProductRepository;
 import com.walyCommerce.walycommerce.services.exceptions.DatabaseException;
 import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -48,10 +49,14 @@ public class ProductService {
 
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
-        Product entity = repository.getReferenceById(id);
-        copyDtoToEntity(dto, entity);
-        entity = repository.save(entity);
-        return new ProductDTO(entity);
+        try{
+            Product entity = repository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity = repository.save(entity);
+            return new ProductDTO(entity);
+        }catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("produto não encontrado");
+        }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)

@@ -5,6 +5,7 @@ import com.walyCommerce.walycommerce.entities.Role;
 import com.walyCommerce.walycommerce.entities.User;
 import com.walyCommerce.walycommerce.projections.UserDetailsProjection;
 import com.walyCommerce.walycommerce.repositories.UserRepository;
+import com.walyCommerce.walycommerce.util.CustonUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private CustonUserUtil custonUserUtil;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<UserDetailsProjection> result = repository.searchUserAndRolesByEmail(username);
@@ -40,9 +44,7 @@ public class UserService implements UserDetailsService {
 
     protected User authenticade(){
        try{
-           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-           Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
-           String username =  jwtPrincipal.getClaim("username");
+           String username = custonUserUtil.getLoggedUsername();
            return repository.findByEmail(username).get();
        }
        catch (Exception e){
