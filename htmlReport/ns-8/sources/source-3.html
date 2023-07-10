@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > OrderService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.walyCommerce.walycommerce.services</a>
+</div>
+
+<h1>Coverage Summary for Class: OrderService (com.walyCommerce.walycommerce.services)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrderService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">OrderService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.walyCommerce.walycommerce.services;
+&nbsp;
+&nbsp;import com.walyCommerce.walycommerce.dto.OrderDTO;
+&nbsp;import com.walyCommerce.walycommerce.dto.OrderItemDTO;
+&nbsp;import com.walyCommerce.walycommerce.dto.ProductDTO;
+&nbsp;import com.walyCommerce.walycommerce.entities.Order;
+&nbsp;import com.walyCommerce.walycommerce.entities.OrderItem;
+&nbsp;import com.walyCommerce.walycommerce.entities.OrderStatus;
+&nbsp;import com.walyCommerce.walycommerce.entities.Product;
+&nbsp;import com.walyCommerce.walycommerce.repositories.OrderItemRepository;
+&nbsp;import com.walyCommerce.walycommerce.repositories.OrderRepository;
+&nbsp;import com.walyCommerce.walycommerce.repositories.ProductRepository;
+&nbsp;import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class OrderService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private OrderRepository repository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ProductRepository productRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private OrderItemRepository orderItemRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private AuthService authService;
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public OrderDTO findById(Long id){
+<b class="fc">&nbsp;        Order order = repository.findById(id).orElseThrow(</b>
+<b class="fc">&nbsp;                ()-&gt; new ResourceNotFoundException(&quot;Recurso não encontrado&quot;));</b>
+<b class="fc">&nbsp;        authService.validateSelfOrAdmin(order.getClient().getId());</b>
+<b class="fc">&nbsp;        return new OrderDTO(order);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public OrderDTO insert(OrderDTO dto) {
+<b class="fc">&nbsp;        Order order =  new Order();</b>
+<b class="fc">&nbsp;        order.setMoment(Instant.now());</b>
+<b class="fc">&nbsp;        order.setStatus(OrderStatus.WAITING_PAYMENT);</b>
+<b class="fc">&nbsp;        order.setClient(userService.authenticade());</b>
+<b class="fc">&nbsp;        for(OrderItemDTO itemDto : dto.getItems()){</b>
+<b class="fc">&nbsp;            Product product = productRepository.getReferenceById(itemDto.getProductId());</b>
+<b class="fc">&nbsp;            OrderItem item = new OrderItem(order, product, itemDto.getQuantity(), product.getPrice());</b>
+<b class="fc">&nbsp;            order.getItems().add(item);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        order = repository.save(order);</b>
+<b class="fc">&nbsp;        orderItemRepository.saveAll(order.getItems());</b>
+&nbsp;
+<b class="fc">&nbsp;        return new OrderDTO(order);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-07-07 00:25</div>
+</div>
+</body>
+</html>

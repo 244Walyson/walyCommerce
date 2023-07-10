@@ -1,4 +1,4 @@
-package com.walyCommerce.walycommerce.services.tests;
+package com.walyCommerce.walycommerce.tests;
 
 import com.walyCommerce.walycommerce.entities.Category;
 import com.walyCommerce.walycommerce.entities.Product;

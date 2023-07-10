@@ -102,6 +102,8 @@
 						<exclude>com/walyCommerce/walycommerce/dto/**</exclude>
 						<exclude>com/walyCommerce/walycommerce/services/exceptions/**</exclude>
 						<exclude>com/walyCommerce/walycommerce/controllers/handlers/**</exclude>
+						<exclude>com/walyCommerce/walycommerce/util/**</exclude>
+						<exclude>com/walyCommerce/walycommerce/controllers/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>

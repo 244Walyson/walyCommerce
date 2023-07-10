@@ -1,6 +1,5 @@
-package com.walyCommerce.walycommerce.services.tests;
+package com.walyCommerce.walycommerce.tests;
 
-import com.walyCommerce.walycommerce.entities.User;
 import com.walyCommerce.walycommerce.projections.UserDetailsProjection;
 
 import java.util.ArrayList;

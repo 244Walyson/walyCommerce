@@ -2,12 +2,11 @@ package com.walyCommerce.walycommerce.services;
 
 import com.walyCommerce.walycommerce.dto.ProductDTO;
 import com.walyCommerce.walycommerce.dto.ProductMinDTO;
-import com.walyCommerce.walycommerce.entities.Category;
 import com.walyCommerce.walycommerce.entities.Product;
 import com.walyCommerce.walycommerce.repositories.ProductRepository;
 import com.walyCommerce.walycommerce.services.exceptions.DatabaseException;
 import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
-import com.walyCommerce.walycommerce.services.tests.ProductFactory;
+import com.walyCommerce.walycommerce.tests.ProductFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.postgresql.hostchooser.HostRequirement.any;
 
 @ExtendWith(SpringExtension.class)
 public class ProductServiceTest {

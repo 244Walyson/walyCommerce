@@ -1,4 +1,4 @@
-package com.walyCommerce.walycommerce.services.tests;
+package com.walyCommerce.walycommerce.tests;
 
 import com.walyCommerce.walycommerce.entities.Role;
 import com.walyCommerce.walycommerce.entities.User;

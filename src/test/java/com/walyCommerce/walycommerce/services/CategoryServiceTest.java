@@ -1,6 +1,6 @@
 package com.walyCommerce.walycommerce.services;
 
-import com.walyCommerce.walycommerce.services.tests.CategoryFactory;
+import com.walyCommerce.walycommerce.tests.CategoryFactory;
 import com.walyCommerce.walycommerce.dto.CategoryDTO;
 import com.walyCommerce.walycommerce.entities.Category;
 import com.walyCommerce.walycommerce.repositories.CategoryRepository;
