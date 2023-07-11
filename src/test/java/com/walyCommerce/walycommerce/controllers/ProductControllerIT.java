@@ -6,6 +6,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.walyCommerce.walycommerce.dto.ProductDTO;
 import com.walyCommerce.walycommerce.entities.Product;
 import com.walyCommerce.walycommerce.tests.ProductFactory;
+import com.walyCommerce.walycommerce.tests.TokenUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,16 +34,28 @@ public class ProductControllerIT {
     private MockMvc mockMvc;
 
     @Autowired
+    private TokenUtil tokenUtil;
+
+    @Autowired
     private ObjectMapper objectMapper;
     private String productName;
     private Product product;
     private ProductDTO productDTO;
-    private String adminToken; 
+    private String clientUsername, clientPassword, adminUsername, adminPassword;
+    private String adminToken, clientToken, invalidToken;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception{
+        clientUsername = "maria@gmail.com";
+        clientPassword = "123456";
+        adminUsername = "alex@gmail.com";
+        adminPassword = "123456";
         product = ProductFactory.createProduct();
         productDTO = new ProductDTO(product);
+
+        adminToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, adminPassword);
+        clientToken = tokenUtil.obtainAccessToken(mockMvc, clientUsername, clientPassword);
+        invalidToken = adminToken + "xpto"; //simulate wrong password
 
         productName = "Macbook";
     }
@@ -75,13 +89,143 @@ public class ProductControllerIT {
 
         ResultActions resultActions = mockMvc.perform(post("/products")
                         .header("Authorization", "Bearer " + adminToken)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isCreated());
+        resultActions.andExpect(jsonPath("$.id").value(26));
+        resultActions.andExpect(jsonPath("$.name").value(productDTO.getName()));
+        resultActions.andExpect(jsonPath("$.price").value(productDTO.getPrice()));
+        resultActions.andExpect(jsonPath("$.description").value(productDTO.getDescription()));
+        resultActions.andExpect(jsonPath("$.imgUrl").value(productDTO.getImgUrl()));
+        resultActions.andExpect(jsonPath("$.categories[0].id").value(1L));
+
+    }
+
+    @Test
+    void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndInvalidName() throws Exception{
+        product.setName("ab");
+        productDTO = new ProductDTO(product);
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + adminToken)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         );
 
-        resultActions.andExpect(status().isCreated());
+        resultActions.andExpect(status().isUnprocessableEntity());
 
+
+    }
+
+    @Test
+    void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndInvalidInvalidDescription() throws Exception{
+        product.setDescription("ab");
+        productDTO = new ProductDTO(product);
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + adminToken)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isUnprocessableEntity());
+
+
+    }
+    @Test
+    void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndNegativePrice() throws Exception{
+        product.setPrice(-40.00);
+        productDTO = new ProductDTO(product);
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + adminToken)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isUnprocessableEntity());
+
+    }
+
+    @Test
+    void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndPriceIsZero() throws Exception{
+        product.setPrice(0.0);
+        productDTO = new ProductDTO(product);
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + adminToken)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isUnprocessableEntity());
+
+
+    }
+
+    @Test
+    void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndProducHasNoCategory() throws Exception{
+        product.getCategories().clear();
+        productDTO = new ProductDTO(product);
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + adminToken)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isUnprocessableEntity());
+
+
+    }
+    @Test
+    void insertShouldReturnForbiddenWhenClientLogged() throws Exception{
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + clientToken)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isForbidden());
+
+
+    }
+
+    @Test
+    void insertShouldReturnUnauthorizedWhenInvalidToken() throws Exception{
+
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions resultActions = mockMvc.perform(post("/products")
+                .header("Authorization", "Bearer " + invalidToken)
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        );
+
+        resultActions.andExpect(status().isUnauthorized());
 
     }
 }
