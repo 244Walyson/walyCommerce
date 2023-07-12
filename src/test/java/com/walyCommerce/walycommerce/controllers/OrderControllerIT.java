@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -77,7 +78,13 @@ public class OrderControllerIT {
 
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.id").value(1L));
-        resultActions.andExpect(jsonPath("$.total").value(1431.0));
+        resultActions.andExpect(jsonPath("$.moment").value("2022-07-25T13:00:00Z"));
+        resultActions.andExpect(jsonPath("$.client").exists());
+        resultActions.andExpect(jsonPath("$.status").value("PAID"));
+        resultActions.andExpect(jsonPath("$.paymentDTO").exists());
+        resultActions.andExpect(jsonPath("$.items").exists());
+        resultActions.andExpect(jsonPath("$.items[1].name").value("Macbook Pro"));
+        resultActions.andExpect(jsonPath("$.total").value(1431.0));//.andDo(MockMvcResultHandlers.print()
     }
 
     @Test
