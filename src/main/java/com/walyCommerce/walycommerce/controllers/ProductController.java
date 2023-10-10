@@ -2,7 +2,9 @@ package com.walyCommerce.walycommerce.controllers;
 
 import com.walyCommerce.walycommerce.dto.ProductDTO;
 import com.walyCommerce.walycommerce.dto.ProductMinDTO;
+import com.walyCommerce.walycommerce.dto.UriDto;
 import com.walyCommerce.walycommerce.services.ProductService;
+import com.walyCommerce.walycommerce.services.S3service;
 import com.walyCommerce.walycommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.Servlet;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -63,4 +66,12 @@ public class ProductController {
        service.delete(id);
        return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/image")
+    public ResponseEntity<UriDto> uploadImage(@RequestParam("file") MultipartFile file){
+        UriDto dto = service.uploadFile(file);
+        return ResponseEntity.ok(dto);
+    }
+
 }

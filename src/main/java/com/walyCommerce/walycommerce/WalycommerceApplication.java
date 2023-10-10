@@ -8,17 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-public class WalycommerceApplication  implements CommandLineRunner{
-
-
-	@Autowired
-	private S3service s3service;
+public class WalycommerceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WalycommerceApplication.class, args);
 	}
 
-	@Override
-	public void run(String... args) throws Exception {
-		s3service.UploadFile("C:/Users/walys/vsprojects/figma/images engenharia de requisitos/Sem título.png");
-	}
 }
