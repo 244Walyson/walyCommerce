@@ -33,12 +33,13 @@ public class S3service {
     public URL UploadFile(MultipartFile file){
         try{
             String originalName = file.getOriginalFilename();
+            Log.info((originalName));
             String extension = FilenameUtils.getExtension(originalName);
             String fileName = Instant.now().getEpochSecond() + "." + extension;
-            
+            Log.info("ex " + extension + "fl "+ fileName);
             InputStream is = file.getInputStream();
             String contentType = file.getContentType();
-
+            Log.info(contentType);
             return uploadFile(is, fileName, contentType);
         }
         catch (IOException e){
@@ -46,9 +47,10 @@ public class S3service {
         }
     }
 
-    private URL uploadFile(InputStream is, String fileName, String contentType) {
+    private URL uploadFile(InputStream is, String fileName, String contentType) throws IOException {
         ObjectMetadata meta = new ObjectMetadata();
         meta.setContentType(contentType);
+        meta.setContentLength(is.available());
         s3client.putObject(bucketName, fileName, is, meta);
         return s3client.getUrl(bucketName, fileName);
     }
